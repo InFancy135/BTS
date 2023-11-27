@@ -28,7 +28,7 @@ public class WebConfig implements WebMvcConfigurer{
 		filterRegistrationBean.setOrder(1);
 		// 필터를 적용할 URL 패턴을 지정.
 		filterRegistrationBean.addUrlPatterns("/*"); // 최상위 경로 밑으로 들어오는 모든 경로에 필터를 적용
-		
+		///////////
 		return filterRegistrationBean;
 	}
 	
