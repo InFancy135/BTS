@@ -4,10 +4,8 @@ import com.example.board.model.board.AttachedFile;
 import com.example.board.model.board.Board;
 import com.example.board.model.board.BoardUpdateForm;
 import com.example.board.model.board.BoardWriteForm;
-import com.example.board.model.board.Reply;
 import com.example.board.model.member.Member;
 import com.example.board.repository.BoardMapper;
-import com.example.board.repository.ReplyMapper;
 import com.example.board.service.BoardService;
 import com.example.board.util.FileService;
 import com.example.board.util.PageNavigator;
@@ -72,8 +70,8 @@ public class BoardController {
                         @RequestParam(required=false) MultipartFile file,
                         BindingResult result) {
        
-        log.info("board: {}", boardWriteForm);
-        log.info("file : {}", file);
+//        log.info("board: {}", boardWriteForm);
+//        log.info("file : {}", file);
         
         // validation 에러가 있으면 board/write.html 페이지를 다시 보여준다.
         if (result.hasErrors()) {
@@ -116,9 +114,8 @@ public class BoardController {
     	
     // 게시글 읽기
     @GetMapping("read")
-    public String read(@SessionAttribute(value="loginMember", required=false) Member loginMember,
-    									@RequestParam Long board_id,
-    									Model model) {
+    public String read(@RequestParam Long board_id,
+                       Model model) {
 
         log.info("id: {}", board_id);
         
@@ -137,8 +134,6 @@ public class BoardController {
         // 모델에 Board 객체를 저장한다.
         model.addAttribute("board", board);
         
-//				List<Reply> replies = replyMapper.findReplies(board_id);
-//        model.addAttribute("replies", replies);
         // board/read.html 를 찾아서 리턴한다.
         return "board/read";
     }
@@ -150,7 +145,7 @@ public class BoardController {
                              Model model) {
         
 
-        log.info("id: {}", board_id);
+//        log.info("id: {}", board_id);
 
         // board_id에 해당하는 게시글이 없거나 게시글의 작성자가 로그인한 사용자의 아이디와 다르면 수정하지 않고 리스트로 리다이렉트 시킨다.
         Board board = boardService.findBoard(board_id);
@@ -163,7 +158,7 @@ public class BoardController {
         model.addAttribute("board", Board.toBoardUpdateForm(board));
         
         AttachedFile attachedFile = boardService.findFileByBoardId(board_id);
-        log.info("첨부파일 : {}", attachedFile);
+//        log.info("첨부파일 : {}", attachedFile);
         
         model.addAttribute("file", attachedFile);
         
@@ -181,7 +176,7 @@ public class BoardController {
                          BindingResult result) {
         
 
-        log.info("board: {}", updateBoard);
+//        log.info("board: {}", updateBoard);
         // validation 에 에러가 있으면 board/update.html 페이지로 돌아간다.
         if (result.hasErrors()) {
             return "board/update";
@@ -251,8 +246,6 @@ public class BoardController {
     			.header(HttpHeaders.CONTENT_DISPOSITION, contentDisposition)
     			.body(resource);
     }
-    
-    
     
     
     

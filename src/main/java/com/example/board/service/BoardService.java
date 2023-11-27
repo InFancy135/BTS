@@ -61,14 +61,13 @@ public class BoardService {
 	public Board readBoard(Long board_id) {
 		Board board = findBoard(board_id);
 		board.addHit();
-		Board findBoard = findBoard(board_id);
 		AttachedFile attachedFile = findFileByBoardId(board_id);
 		
 		boolean isFileRemoved = true;
 		if(attachedFile == null) {
 			isFileRemoved = false;
 		}
-		updateBoard(board, false, null);
+//		updateBoard(board, isFileRemoved, attachedFile);
 		return board;
 	}
 

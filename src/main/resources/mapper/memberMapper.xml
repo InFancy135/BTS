@@ -10,14 +10,16 @@
 	  name,
 	  gender,
 	  birth,
-	  email
+	  email,
+	  role
 	) VALUES (
 	  #{member_id},
 	  #{password},
 	  #{name},
 	  #{gender},
 	  #{birth},
-	  #{email}
+	  #{email},
+	  #{role}
 	)
   </insert>
   <select id="findMember" resultType="member">

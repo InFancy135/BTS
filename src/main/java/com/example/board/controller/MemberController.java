@@ -8,6 +8,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
@@ -19,6 +20,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import com.example.board.config.UserInfo;
 import com.example.board.model.member.LoginForm;
 import com.example.board.model.member.Member;
 import com.example.board.model.member.MemberJoinForm;
@@ -90,55 +92,23 @@ public class MemberController {
 	
 	// 로그인 페이지 이동
   @GetMapping("login")
-  public String loginForm(Model model) {
+  public String loginForm(Model model,
+  												@RequestParam(value="error", required=false) boolean error,
+  												@RequestParam(value="message", required=false) String message) {
   		log.info("로그인 페이지");
+  		log.info("error : {} ", error);
+  		log.info("message : {} ", message);
+  		
+  		if(error) {
+  			model.addAttribute("error", error);
+  			model.addAttribute("message", message);
+  		}
+  		
       // member/loginForm.html 에 필드 셋팅을 위해 빈 LoginForm 객체를 생성하여 model 에 저장한다.
       model.addAttribute("loginForm", new LoginForm());
       // member/loginForm.html 페이지를 리턴한다.
       return "member/loginForm";
   }
-	
-  // 로그인 처리
-	@PostMapping("login")
-	public String login(@Validated @ModelAttribute("loginForm") LoginForm loginForm,
-						BindingResult result,
-						HttpServletResponse response,
-						HttpServletRequest request,
-						@RequestParam(defaultValue="/") String redirectURL) {
-		log.info("loginForm: {}", loginForm);
-		log.info("redirectURL : {}", redirectURL);
-		// validation 에 실패하면 member/loginForm 페이지로 돌아간다.
-		if(result.hasErrors()) {
-			return "member/loginForm";
-		}
-		// 사용자가 입력한 이이디에 해당하는 Member 정보를 데이터베이스에서 가져온다.
-		Member member = memberService.findMember(loginForm.getMember_id());
-    // Member 가 존재하지 않거나 패스워드가 다르면
-    if (member == null || !member.getPassword().equals(loginForm.getPassword())) {
-        // BindingResult 객체에 GlobalError 를 발생시킨다.
-        result.reject("loginError", "아이디가 없거나 패스워드가 다릅니다.");
-        // member/loginForm.html 페이지로 돌아간다.
-        return "member/loginForm";
-    }
-		
-		//쿠키를 이용한 로그인처리
-		//쿠키: 웹브라우저와 서버의 도메인 사이에 생성된 데이터로 클라이언트 사이드에 저장
-        //Cookie cookie = new Cookie("cookieLoginId",findMember.getMember_id());
-		//쿠키는 도메인의 디렉토리별로 저장되기 때문에 path를 /로 지정하여 모든 경로에서 읽을 수 있게 처리
-        //cookie.setPath("/");
-        //response.addCookie(cookie);
-		
-		//세션을 이용한 로그인처리
-		//세션: 웹브라우저와 서버 사이에 생성된 데이터로 서버 사이드에 저장
-        
-    // Request 객체에서 Session 객체를 꺼내온다.
-		HttpSession session = request.getSession();
-		// Session 에 'loginMember' 라는 이름으로 Member 객체를 저장한다.
-		session.setAttribute("loginMember", member);
-		// 메인 페이지로 리다이렉트 한다.
-		log.info("로그인 실행");
-	 	return "redirect:" + redirectURL;
-	}
 	
 	@GetMapping("sessionInfo")
 	public String sessionInfo(HttpServletRequest request) {
@@ -154,9 +124,28 @@ public class MemberController {
 		return "redirect:/";
 	}
 	
+	
+	
+	@GetMapping("login-success")
+	public String loginSuccess(@AuthenticationPrincipal UserInfo userInfo) {
+		log.info("로그인 성공, userInfo : {}", userInfo.getMember());
+		
+		return "redirect:/";
+	}
+	
+	@GetMapping("login-failed")
+	public String loginFailed() {
+		log.info("로그인 실패");
+		
+		return "redirect:/";
+	}
+	
+	
+	
 	@GetMapping("logout")
 	public String logout(HttpServletResponse response,
 						  HttpServletRequest request) {
+		log.info("로그아웃 호출");
 		//전과 같은 이름을 만들면서 값을 null로
 		//Cookie cookie = new Cookie("cookieLoginId", null);
 		//cookie.setPath("/");

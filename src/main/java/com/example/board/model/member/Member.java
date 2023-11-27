@@ -12,4 +12,5 @@ public class Member {
 	private GenderType gender;
 	private LocalDate birth;
 	private String email;
+	private RoleType role;
 }

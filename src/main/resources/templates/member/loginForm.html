@@ -3,12 +3,16 @@
 <head>
   <meta charset="UTF-8">
   <title>로그인</title>
-  <link rel="stylesheet" href="/default.css">
+  <link rel="stylesheet" href="/css/default.css">
 </head>
 <body>
 <div id="container">
   <h1>[ 로그인 ]</h1>
-  <form action="" method="post" th:object="${loginForm}">
+  
+  <form action="/member/login" method="post" th:object="${loginForm}">
+    <p></p>
+    <div class="error" th:if="${error}" th:text="${message}"></div>
+    <p></p>
     <div th:if="${#fields.hasGlobalErrors()}">
   	  <p class="error" th:each="err : ${#fields.globalErrors}" th:text="${err}">
   	</div>
